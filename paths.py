@@ -2,6 +2,9 @@ import random
 from itertools import permutations
 from math import factorial
 import matplotlib.pyplot as plt
+from time import time as timer
+
+starttime = timer()
 
 npoints = 9
 
@@ -65,5 +68,14 @@ print(lengths[bestpath])
 x = [i.xpos for i in paths[bestpath]]
 y = [i.ypos for i in paths[bestpath]]
 
-plt.plot(x, y, '+-')
+endtime = timer()
+
+print(endtime-starttime)
+
+fig, (ax1, ax2) = plt.subplots(1,2)
+ax1.plot(x, y, '+-')
+ax2.hist(lengths, bins=npoints*(npoints-2), ec='black')
+#plt.plot(x, y, '+-')
+#pl.show()
+#plt.hist(lengths)
 plt.show()
