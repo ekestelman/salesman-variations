@@ -6,7 +6,7 @@ from time import time as timer
 
 starttime = timer()
 
-npoints = 9
+npoints = 8
 
 class Point:
   
@@ -14,6 +14,12 @@ class Point:
     self.xpos = xpos
     self.ypos = ypos
     #self.neighbors = []
+
+class Path:
+
+  def __init__(self, nodes):
+    self.segment = [0 for i in nodes-1]
+    self.total = sum(self.segment)         # check syntax
 
 #class Path:
 #  
@@ -60,17 +66,30 @@ for i in range(len(paths)):
 #pathlength = {i: j for i,j in zip(lengths, paths)}
 #print(paths)
 #print(lengths)
-print(len(paths),len(lengths))
+#print(len(paths),len(lengths))
 bestpath = lengths.index(min(lengths))
-print(bestpath)
-print(lengths[bestpath])
+#print(bestpath)
+print('length of shortest path =', lengths[bestpath])
  
 x = [i.xpos for i in paths[bestpath]]
 y = [i.ypos for i in paths[bestpath]]
 
+avgDist = 0                   # Initialize avg distance between points along path
+
+for i in range(npoints-1):                    # Did some algebra for this
+  avgDist += i * distcalc(paths[bestpath][i], paths[bestpath][i+1]) * (npoints - i)
+
+avgDist /= (npoints**2 - npoints) / 2      # npoints choose 2
+
+print('average distance along path between any two points =', avgDist)
+
+#for i in paths[bestpath]:
+#  for j in paths[bestpath]:
+#    avgDist += distcalc     # Want dist along path, not Euclidean distance
+
 endtime = timer()
 
-print(endtime-starttime)
+print('computation time =', endtime-starttime, 'seconds')
 
 fig, (ax1, ax2) = plt.subplots(1,2)
 ax1.plot(x, y, '+-')
