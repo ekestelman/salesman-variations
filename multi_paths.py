@@ -1,5 +1,5 @@
 import random
-from itertools import permutations
+from itertools import permutations, combinations
 from math import factorial
 import matplotlib.pyplot as plt
 from time import time as timer
@@ -10,7 +10,7 @@ npoints = 8         # max 15 for <1s computation
 
 class Point:
   
-  def __init__(self, xpos, ypos, line):
+  def __init__(self, xpos, ypos, line='A'):
     self.xpos = xpos
     self.ypos = ypos
     self.line = line             # Which line does this point belong to
@@ -38,6 +38,7 @@ y = [random.randrange(0,101) for i in range(npoints)]
 #nodes = [Point(i,j,'A') for i,j in zip(x,y)]
 
 # Consider placing intersection node in middle of optimized path rather than randomly
+# Consider some method where we guarantee paths will not cross, which might necessarily? Be less efficient
 #nodesA = [Point(i,j,'A') for i,j in zip(x,y) if x.index(i) <= int(npoints/2)]    # int ensures that one
 #nodesB = [Point(i,j,'B') for i,j in zip(x,y) if x.index(i) >= int(npoints/2)]    # node is shared
 # WARNING: the above block causes an error ONLY if a value should appear in both lists
@@ -46,30 +47,51 @@ y = [random.randrange(0,101) for i in range(npoints)]
 
 # Use n*n array to store distances between points?
 
-nodesA = [Point(x[i], y[i], 'A') for i in range(int(npoints/2)+1)]
-nodesB = [Point(x[i], y[i], 'B') for i in range(int(npoints/2), npoints)]
+#nodesA = [Point(x[i], y[i], 'A') for i in range(int(npoints/2)+1)]
+#nodesB = [Point(x[i], y[i], 'B') for i in range(int(npoints/2), npoints)]
 
-#print(x,'\n',y)
-#print(len(nodesA),len(nodesB))
+nodes = [Point(x[i], y[i]) for i in range(npoints)]
 
-#for i,j in zip(nodesA, nodesB):
-#  print(i.xpos, j.xpos)
+combosB = [None for i in range(2,npoints)]      # Each element of combosB is a list nCi
+                                                # Each element of each nCi is a tuple
+                                                # of i nodes
 
-nodesA[-1].both = True
-nodesB[0].both = True
+for i in range(2, npoints):
+  combosB[i-2] = list(combinations(nodes, i))
+
+combosA = [[[None for k in j] for j in combosB[i]] for i in range(len(combosB))]
+# Alternate forms for above?
+#combosA = [[[None for k in j] for j in i] for i in combosB]
+#combosA = [[[None for k in combosB[i][j]] for j in range(len(combosB[i]])) for i in range(len(combosB))]
+
+# combosB[i][j][k] is the kth node in the jth combination of i+2 nodes.
+# combosA[i][j][k] is a list of nodes including the kth node from above.
+# Could instead just find all possible combos for lines A and B, compute paths
+# independently, and choose best such that len(A)+len(B)=npoints+1
+# No, would need best such that A union B = nodes.
+
+for i in range(len(combosB)):
+  for j in range(len(combosB[i])):
+    for k in range(len(combosB[i][j])):
+      combosA[i][j][k] = list(element for element in nodes if element not in combosB[i][j])
+      combosA[i][j][k].append(combosB[i][j][k])
+    # use list instead of tuple for mutability
+
+#nodesA[-1].both = True
+#nodesB[0].both = True
 #print(nodesA[-1].xpos, nodesB[0].xpos)
-
-#quit(0)
 
 #for i in range(npoints):
 #  print(x[i],y[i])
 #  print(nodes[i].xpos,nodes[i].ypos)
 
-lengthsA = [0 for i in range(factorial(len(nodesA)))]
-lengthsB = [0 for i in range(factorial(len(nodesB)))]
+#lengthsA = [0 for i in range(factorial(len(nodesA)))]
+#lengthsB = [0 for i in range(factorial(len(nodesB)))]
 #lengths = [[0 for i in range(factorial(npoints-1))] for j in range(npoints)]
-pathsA = list(permutations(nodesA))
-pathsB = list(permutations(nodesB))
+#pathsA = list(permutations(nodesA))
+#pathsB = list(permutations(nodesB))
+quit('0')
+pathsA = [None for i in j for j in k for k in combosA] #????
 
 #pathlength = {i: j for i,j in zip(lengths, paths)} # Use pointers to keep order and change vals?
 #print(pathlength)
