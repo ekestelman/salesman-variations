@@ -6,7 +6,7 @@ from time import time as timer
 
 starttime = timer()
 
-npoints = 8         # max 15 for <1s computation
+npoints = 7         # max 15 for <1s computation
 
 class Point:
   
@@ -52,30 +52,28 @@ y = [random.randrange(0,101) for i in range(npoints)]
 
 nodes = [Point(x[i], y[i]) for i in range(npoints)]
 
-combosB = [None for i in range(2,npoints)]      # Each element of combosB is a list nCi
-                                                # Each element of each nCi is a tuple
-                                                # of i nodes
+pathsB = [None for i in range(2,npoints)]      # Each element of combosB is a list nCi
+pathsA = [None for i in range(2,npoints)]      # Each element of each nCi is a tuple
+                                               # of i nodes
+# Consider defining a function to facilitate pairing relevant combinations
+
+lengthsA = [None for i in range(2, npoints)]
+lengthsB = [None for i in range(2, npoints)]
 
 for i in range(2, npoints):
-  combosB[i-2] = list(combinations(nodes, i))
+  pathsB[i-2] = list(permutations(nodes, i))
+  pathsA[i-2] = list(permutations(nodes, i))
+  lengthsA[i-2] = [0 for j in pathsA[i-2]]
+  lengthsB[i-2] = [0 for j in pathsB[i-2]]
 
-combosA = [[[None for k in j] for j in combosB[i]] for i in range(len(combosB))]
-# Alternate forms for above?
-#combosA = [[[None for k in j] for j in i] for i in combosB]
-#combosA = [[[None for k in combosB[i][j]] for j in range(len(combosB[i]])) for i in range(len(combosB))]
+#pathsA[0][0][0].line = 'B'                               # Sanity check
+#print(pathsA[0][0][0].line, pathsB[0][0][0].line)
 
-# combosB[i][j][k] is the kth node in the jth combination of i+2 nodes.
-# combosA[i][j][k] is a list of nodes including the kth node from above.
-# Could instead just find all possible combos for lines A and B, compute paths
-# independently, and choose best such that len(A)+len(B)=npoints+1
-# No, would need best such that A union B = nodes.
+# Each pathsA[i][j][k] is the kth node of the jth permutation of i nodes.
+# Each lengthsA[i][j] is the path length of the jth permutation of i nodes.
+# Some way to delete permutations that are mirrors of each other?
 
-for i in range(len(combosB)):
-  for j in range(len(combosB[i])):
-    for k in range(len(combosB[i][j])):
-      combosA[i][j][k] = list(element for element in nodes if element not in combosB[i][j])
-      combosA[i][j][k].append(combosB[i][j][k])
-    # use list instead of tuple for mutability
+# Want best such that A union B = nodes.
 
 #nodesA[-1].both = True
 #nodesB[0].both = True
@@ -85,36 +83,77 @@ for i in range(len(combosB)):
 #  print(x[i],y[i])
 #  print(nodes[i].xpos,nodes[i].ypos)
 
-#lengthsA = [0 for i in range(factorial(len(nodesA)))]
-#lengthsB = [0 for i in range(factorial(len(nodesB)))]
-#lengths = [[0 for i in range(factorial(npoints-1))] for j in range(npoints)]
-#pathsA = list(permutations(nodesA))
-#pathsB = list(permutations(nodesB))
-quit('0')
-pathsA = [None for i in j for j in k for k in combosA] #????
+for i in range(len(lengthsA)):
+  for j in range(len(lengthsA[i])):
+    #print(len(pathsA[i][j]), len(pathsB[i][j]))   # Sanity check
+    for k in range(len(pathsA[i][j])-1):
+      lengthsA[i][j] += distcalc(pathsA[i][j][k], pathsA[i][j][k+1])
+      lengthsB[i][j] += distcalc(pathsB[i][j][k], pathsB[i][j][k+1])
+# Several unnecessary calc: did same things for pathsA and B, lengths A and B,
+# could just declare and assign later.
 
-#pathlength = {i: j for i,j in zip(lengths, paths)} # Use pointers to keep order and change vals?
-#print(pathlength)
-
-#for i in range(npoints):                # Bad block?
-#  for j in range(npoints):
-#    if i==j:
-#      continue
-#    else:
-#      lengths[i] += distcalc(nodes[i], nodes[j])
-#      #dist[i][j] = ( (x[i] - x[j]) ** 2 + (y[i] - y[j]) ** 2 ) ** 0.5
-
-#for i in range(npoints-1):                     # There is 1 fewer edge than there are nodes
-#  lengths[i] += distcalc(nodes[i], nodes[i+1])
-#  for j in range(factorial(npoints)): #maybe need a while loop?
-#    for k in range(npoints):
+# pathsA[0] should match with pathsB[-1] ?
+lengths = []
+trackpath = []
 
 for i in range(len(pathsA)):
-  for j in range(len(nodesA)-1):
-    lengthsA[i] += distcalc(pathsA[i][j], pathsA[i][j+1])
-for i in range(len(pathsB)):
-  for j in range(len(nodesB)-1):
-    lengthsB[i] += distcalc(pathsB[i][j], pathsB[i][j+1])
+  for j in range(len(pathsA[i])):
+    for k in range(len(pathsB[-1-i])):
+      if set(pathsA[i][j]).union(set(pathsB[-1-i][k])) == set(nodes):
+        lengths.append(lengthsA[i][j] + lengthsB[-1-i][k])
+        trackpath.append([pathsA[i][j], pathsB[-1-i][k]])
+      #  union = True
+      #else: union = False
+      #if len(set(pathsA[i][j]).intersection(set(pathsB[-1-i][k]))) == 1:
+      #  intersection = True
+      #else: intersection = False
+      #if union != intersection: print('bad')
+        # Use dict to track indices?
+        #print('yes',i,j,k)
+      #else: print('no',i,j,k)
+print(len(lengths)) 
+print(min(lengths), max(lengths))
+print(len(set(lengths)))
+''' Something is very wrong here (I think just the test is bad)
+duplicates = 0
+for i in range(len(lengths)):
+  for j in range(i):
+    if i==j:
+      continue
+    elif lengths[i]==lengths[j]:
+      duplicates += 1
+      print(i,j,lengths[i], lengths[j],duplicates, len(lengths))
+print(duplicates)
+'''
+#for i in range(len(lengthsA)):
+#  for j in range(len(lengthsA[i])):
+#    print(i,j,lengthsA[i][j])
+#    if i==5: quit('0')
+endtime = timer()
+
+print('computation time =', endtime-starttime, 'seconds')
+
+best = lengths.index(min(lengths))
+xa = [i.xpos for i in trackpath[best][0]]
+ya = [i.ypos for i in trackpath[best][0]]
+xb = [i.xpos for i in trackpath[best][1]]
+yb = [i.ypos for i in trackpath[best][1]]
+plt.plot(xa,ya,'+-')
+plt.plot(xb,yb,'+-')
+plt.axis('equal')
+#fig, ax = plt.plot()
+#ax.plot(xa,ya,'+-')
+#ax.plot(xb,yb,'+-')
+#ax.axis('equal')
+plt.show()
+quit('0')
+
+#for i in range(len(pathsA)):
+#  for j in range(len(nodesA)-1):
+#    lengthsA[i] += distcalc(pathsA[i][j], pathsA[i][j+1])
+#for i in range(len(pathsB)):
+#  for j in range(len(nodesB)-1):
+#    lengthsB[i] += distcalc(pathsB[i][j], pathsB[i][j+1])
       
 #pathlength = {i: j for i,j in zip(lengths, paths)}
 #print(paths)
