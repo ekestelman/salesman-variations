@@ -4,47 +4,33 @@
 
 using namespace std;
 
-//const int nNodes {5};
-
 struct Node {
 
-  double x;
-  double y;
+  int x;                        // rand generates int, avoid narrowing conversion warning
+  int y;
+  int id;                       // identify the node for permutation purposes
+  string coords() {
+    string xstr = to_string(x);
+    string ystr = to_string(y);
+    return '(' + xstr + ", " + ystr + ") ";
+    }
 
   };
 
-struct Path {
-
-  //double segment[nNodes];
-  //int n;                     // nNodes
-  double *segment;           // Length of a segment... actually want array of nodes
-                                 // Consider instead a (linked?) list of nodes, a string or arr that gives
-                                 // a map for the order, but all point to a single copy of each node
-  double length {0};             // Total path length
-
-  };
-
-Path pathFun(Path p) {
-//int pathFun() {
-  
-  cout << "This function will return the best path" << endl;
-
-  //int nNodes {5};     // Not visible to Path struct
-
-  Path bestPath = p;
-
-  return bestPath;
-  //return 0;
-
-  }
-
-void path_init(Path p, int n) {
-
-  //double p.segment[n] = {0,1,2};  expects initializer
-  p.segment = new double[n];
-  //p.segment = {1,2,3};// Can't do this
-
-  }
+//struct Path {
+//
+//  double *segment;           // Length of a segment... actually want array of nodes
+//                                 // Consider instead a (linked?) list of nodes, a string or arr that gives
+//                                 // a map for the order, but all point to a single copy of each node
+//  double length {0};             // Total path length
+//
+//  };
+//
+//void path_init(Path& p, int n) {
+//
+//  p.segment = new double[n];
+//
+//  }
 
 double dist(Node a, Node b) {
 
@@ -59,54 +45,60 @@ double path_len(Node* a, int n) {
 
   double sum {0};
 
-  for (int i=0; i<n; i++) {
+  for (int i=0; i<n-1; i++) {
     sum += dist(a[i], a[i+1]);
     }
+
+  return sum;
 
   }
 
 int main() {
-
-  Node x0 = {1, 2};
-  Node x1 = {2, 3};
-
-  cout << x0.x << endl;
-
-  int nNodes = 3;
-
-  double X[] = {1, 4, 7};
-  double Y[] = {3, 6, 5};
-  Node nodes[nNodes];
   
-  for (int i=0; i < nNodes; i++) {
-    
-    nodes[i] = {X[i], Y[i]};
+  srand(time(NULL));          // Careful of repeat calls?
 
+  int nNodes = 11;
+
+  int indx[nNodes];
+  Node nodes[nNodes];
+  Node original[nNodes];                // Holds original arrangement of nodes for permuting
+  Node best[nNodes];                    // Store best path
+
+  for (int i=0; i<nNodes; i++) {
+    original[i] = {rand() % 100, rand() % 100, i};      // narrowing conversion
+    //nodes[i] = original[i];
+    indx[i] = i;
     }
 
-  Path path0;
-  path_init(path0, nNodes);
-  //path0.segment = new double[nNodes];
+  //double best_len {path_len(original, nNodes)}; // Problem if first is shortest (never assigns best[])
+  double best_len {1e300};
+  double temp_len;
 
-  //Node nodes[] = {x0, x1};
+  do {
+    //for (int elem : indx) {
+    //  cout << elem << ' ';
+    //  }
+    //cout << endl;
+    //for (int elem : indx) {        // equivalent option?
+    for (int j=0; j<nNodes; j++) {
+      nodes[j] = original[indx[j]];
+      //cout << nodes[j].coords();
+      }
+    temp_len = path_len(nodes, nNodes);
+    //cout << temp_len << endl;
+    if (temp_len < best_len) {
+      best_len = temp_len;
+      for (int i=0; i<nNodes; i++) {
+        best[i] = nodes[i];
+        }
+      }
+    //for (Node elem : original) cout << elem.coords();
+    //  cout << endl;
+    } while (next_permutation(indx, indx + nNodes));
 
-  pathFun(path0);
-
-  //cout << pathFun(path0) << endl; // can't print Path object
-  cout << path0.length << endl;
-  cout << "All good" << endl;
-  cout << path0.segment[4] << endl;
-  for (auto x : X)
-    cout << x << ' ';
+  cout << best_len << endl;
+  for (Node elem : best) cout << elem.coords();
   cout << endl;
-  for (int i=0; i<7; i++) {
-  cout << next_permutation(X, X+3) << endl;
-  for (auto x : X)
-    cout << x << ' ';
-  cout << endl;}
-  cout << dist(x0,x1) << endl;
-  cout << dist(nodes[0], nodes[1]) << endl;
-  cout << path_len(nodes, nNodes) << endl;
 
   }
 
