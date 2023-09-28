@@ -1,8 +1,8 @@
 # Salesman Variations
 
-Variation of the traveling salesman problem.
+Variation of the traveling salesman problem where two salesman must meet at one node.
 
-# Basic Usage
+## Basic Usage
 
 ```paths.py```
 
@@ -26,7 +26,37 @@ for runtime under 1 second. Results may look quite different, partially dependen
 number of nodes. For instance, sometimes a single line is the best path. With more
 nodes, this is less likely to be the case.
 
-# Requirements
+## Screenshots
+
+### Lone Salesman
+
+In the figures below, the left plot shows randomly placed nodes and the shortest path connecting them. The right plot shows a histogram of all possible path lengths. The _x_-axis shows path length. The _y_-axis shows number of possible paths within a bin.
+
+The possible path lengths for a single salesman traversing 8 nodes can produce strange distributions.
+
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/path-dist-polymodal.png?raw=true)
+
+When traversing 11 nodes, the distribution of possible paths looks more normal.
+
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/path-dist-polymodal.png?raw=true)
+
+### Two Salesmen
+
+Sometimes a second salesman helps only a little.
+
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-7.png?raw=true)
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8c.png?raw=true)
+
+Sometimes having a second salesman makes no difference. A lone salesman could have accomplished these two examples.
+
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8.png?raw=true)
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8b.png?raw=true)
+
+This salesman was a big help.
+
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/two_lines_salesman.png?raw=true)
+
+## Requirements
 
 Python 3.6.7
 
