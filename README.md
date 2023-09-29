@@ -38,19 +38,23 @@ The possible path lengths for a single salesman traversing 8 nodes can produce s
 
 When traversing 11 nodes, the distribution of possible paths looks more normal.
 
-![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/path-dist-polymodal.png?raw=true)
+![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-11.png)
 
 ### Two Salesmen
 
 Sometimes a second salesman helps only a little.
-
+<!--
 ![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-7.png?raw=true)
 ![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8c.png?raw=true)
+-->
+<img src="https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-7.png" width="49%"> <img src="https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8c.png" width="49%">
 
 Sometimes having a second salesman makes no difference. A lone salesman could have accomplished these two examples.
-
+<!--
 ![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8.png?raw=true)
 ![](https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8b.png?raw=true)
+-->
+<img src="https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8.png" width="49%"> <img src=https://github.com/ekestelman/salesman-variations/blob/main/Salesman%20Images/paths-8b.png width=49%>
 
 This salesman was a big help.
 
